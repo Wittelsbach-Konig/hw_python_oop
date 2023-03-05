@@ -25,6 +25,7 @@ class Training:
     """Базовый класс тренировки."""
     M_IN_KM = 1000
     LEN_STEP = 0.65
+    MIN_IN_H = 60
 
     def __init__(self,
                  action: int,
@@ -51,7 +52,7 @@ class Training:
 
     def show_training_info(self) -> InfoMessage:
         """Вернуть информационное сообщение о выполненной тренировке."""
-        return InfoMessage(self.__name__,
+        return InfoMessage(self.__class__.__name__,
                            self.duration,
                            self.get_distance(),
                            self.get_mean_speed(),
@@ -73,7 +74,8 @@ class Running(Training):
         spent_calories = ((self.CALORIES_MEAN_SPEED_MULTIPLIER
                            * self.get_mean_speed()
                            + self.CALORIES_MEAN_SPEED_SHIFT)
-                          * self.weight / self.M_IN_KM * self.duration)
+                          * self.weight / self.M_IN_KM * self.duration
+                          * self.MIN_IN_H)
         return spent_calories
 
 
@@ -81,6 +83,8 @@ class SportsWalking(Training):
     """Тренировка: спортивная ходьба."""
     CALORIES_MEAN_WEIGHT_MULTIPLIER_1 = 0.035
     CALORIES_MEAN_WEIGHT_MULTIPLIER_2 = 0.029
+    KM_TO_MC = 0.278
+    SM_TO_M = 100
 
     def __init__(self,
                  action: int,
@@ -93,9 +97,11 @@ class SportsWalking(Training):
     def get_spent_calories(self) -> float:
         spent_calories = ((self.CALORIES_MEAN_WEIGHT_MULTIPLIER_1
                            * self.weight
-                           + (self.get_mean_speed()**2 / self.height)
+                           + ((self.get_mean_speed()
+                              * self.KM_TO_MC)**2 / self.height * self.SM_TO_M)
                            * self.CALORIES_MEAN_WEIGHT_MULTIPLIER_2
-                           * self.weight) * self.duration)
+                           * self.weight) * self.duration
+                          * self.MIN_IN_H)
         return spent_calories
 
 
