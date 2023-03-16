@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from dataclasses import asdict
 from typing import Any
+from typing import ClassVar
 
 
 @dataclass(repr=False, eq=False)
@@ -13,20 +14,16 @@ class InfoMessage:
     speed: float
     calories: float
 
-    MESSAGE_TEMPLATE: str = ('Тип тренировки: {training_type}; '
-                             'Длительность: {duration:.3f} ч.; '
-                             'Дистанция: {distance:.3f} км; '
-                             'Ср. скорость: {speed:.3f} км/ч; '
-                             'Потрачено ккал: {calories:.3f}.')
+    MESSAGE_TEMPLATE: ClassVar[str] = ('Тип тренировки: {training_type}; '
+                                       'Длительность: {duration:.3f} ч.; '
+                                       'Дистанция: {distance:.3f} км; '
+                                       'Ср. скорость: {speed:.3f} км/ч; '
+                                       'Потрачено ккал: {calories:.3f}.')
 
     def get_message(self) -> str:
         """Получить сообщение о тренировке."""
-        try:
-            Dict: dict[str, Any] = asdict(self)
-        except TypeError:
-            raise TypeError((f'{self.__class__.__name__} '
-                             f'не является экземпляром dataclass'))
-        message: str = self.MESSAGE_TEMPLATE.format(**Dict)
+        obj_to_dict: dict[str, Any] = asdict(self)
+        message: str = self.MESSAGE_TEMPLATE.format(**obj_to_dict)
         return message
 
 
@@ -78,7 +75,7 @@ class Training:
 
     def show_training_info(self) -> InfoMessage:
         """Вернуть информационное сообщение о выполненной тренировке."""
-        return InfoMessage(self.__class__.__name__,
+        return InfoMessage(type(self).__name__,
                            self.duration,
                            self.get_distance(),
                            self.get_mean_speed(),
