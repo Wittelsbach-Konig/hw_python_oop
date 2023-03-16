@@ -3,7 +3,7 @@ from dataclasses import asdict
 from typing import Any
 
 
-@dataclass(repr=False, eq=False, match_args=False)
+@dataclass(repr=False, eq=False)
 class InfoMessage:
     """Информационное сообщение о тренировке."""
 
